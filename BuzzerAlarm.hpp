@@ -37,10 +37,12 @@ class BuzzerAlarm : public LibXR::Application {
               UNUSED(file);
               UNUSED(line);
 
-              alarm->Play(alarm->alarm_freq_, alarm->alarm_duration_);
-              if (!in_isr) {
-                LibXR::Thread::Sleep(alarm->alarm_delay_);
+              if (in_isr) {
+                return;
               }
+
+              alarm->Play(alarm->alarm_freq_, alarm->alarm_duration_);
+              LibXR::Thread::Sleep(alarm->alarm_delay_);
             },
             this));
     PlayNote(NoteName::B, 4, 200);
