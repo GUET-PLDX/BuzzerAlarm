@@ -3,33 +3,24 @@
 // clang-format off
 /* === MODULE MANIFEST V2 ===
 module_description: 无源蜂鸣器报警模块 / Buzzer alarm module
-constructor_args:
-  - alarm_freq: 1500
-  - alarm_duration: 300
-  - alarm_delay: 300
-template_args: []
-required_hardware: pwm_buzzer
 depends: []
 === END MANIFEST === */
 // clang-format on
 
-#include "app_framework.hpp"
+#include "libxr.hpp"
 #include "pwm.hpp"
 
-class BuzzerAlarm : public LibXR::Application {
+class BuzzerAlarm {
  public:
   // NOLINTNEXTLINE
   enum class NoteName { C = 0, Cs, D, Ds, E, F, Fs, G, Gs, A, As, B };
 
-  BuzzerAlarm(LibXR::HardwareContainer& hw, LibXR::ApplicationManager& app,
-              uint32_t alarm_freq, uint32_t alarm_duration,
+  BuzzerAlarm(LibXR::PWM& pwm, uint32_t alarm_freq, uint32_t alarm_duration,
               uint32_t alarm_delay)
       : alarm_freq_(alarm_freq),
         alarm_duration_(alarm_duration),
         alarm_delay_(alarm_delay),
-        pwm_(hw.template FindOrExit<LibXR::PWM>({"pwm_buzzer"})) {
-    app.Register(*this);
-
+        pwm_((&pwm)) {
     LibXR::Assert::RegisterFatalErrorCallback(
         LibXR::Callback<const char*, uint32_t>::Create(
             [](bool in_isr, BuzzerAlarm* alarm, const char* file,
@@ -65,7 +56,7 @@ class BuzzerAlarm : public LibXR::Application {
     Play(static_cast<uint32_t>(freq), static_cast<uint32_t>(duration));
   }
 
-  void OnMonitor() override {}
+  void OnMonitor() {}
 
  private:
   uint32_t alarm_freq_;
