@@ -36,15 +36,19 @@ class BuzzerAlarm {
               LibXR::Thread::Sleep(alarm->alarm_delay_);
             },
             this));
-    PlayNote(NoteName::B, 4, 200);
-    PlayNote(NoteName::G, 3, 200);
-    PlayNote(NoteName::B, 4, 400);
+    // Fuji Shan Xia MIDI [0.46875, 1.46875 s): skip the leading rest and
+    // use the higher note during overlap. Relative times rounded to
+    // milliseconds.
+    PlayNote(NoteName::C, 6, 260);
+    PlayNote(NoteName::C, 7, 313);
+    PlayNote(NoteName::B, 6, 312);
+    PlayNote(NoteName::C, 7, 115);
   }
 
   void Play(uint32_t freq, uint32_t duration) {
     pwm_->SetConfig({freq});
     pwm_->Enable();
-    pwm_->SetDutyCycle(0.005);
+    pwm_->SetDutyCycle(0.01f);
     LibXR::Thread::Sleep(duration);
     pwm_->Disable();
   }
